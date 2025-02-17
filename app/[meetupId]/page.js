@@ -1,27 +1,40 @@
-import MeetupDetail from '../../components/meetups/MeetupDetail';
+import { MongoClient, ObjectId } from "mongodb";
+import MeetupDetail from "../../components/meetups/MeetupDetail";
 
-// Example data for demonstration
-const DUMMY_MEETUPS = {
-  m1: {
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Stadtbild_M%C3%BCnchen.jpg/1280px-Stadtbild_M%C3%BCnchen.jpg',
-    title: 'First Meetup',
-    address: 'Some Street 5, Some City',
-    description: 'This is a first meetup',
-  },
-  m2: {
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Stadtbild_M%C3%BCnchen.jpg/1280px-Stadtbild_M%C3%BCnchen.jpg',
-    title: 'Second Meetup',
-    address: 'Another Street 10, Some City',
-    description: 'This is a second meetup',
-  },
-};
+async function getMeetupData(meetupId) {
+  const client = await MongoClient.connect(
+    "mongodb+srv://tope:ZMdfEeEoXuhCPcrA@cluster0.eg0br.mongodb.net/tope?retryWrites=true&w=majority",
+    {
+      serverSelectionTimeoutMS: 5000,
+      retryWrites: true,
+      connectTimeoutMS: 10000,
+      socketTimeoutMS: 45000,
+    }
+  );
 
-// MeetupDetails component as a server component
+  const db = client.db();
+  const meetupsCollection = db.collection("tope");
+
+  const selectedMeetup = await meetupsCollection.findOne({
+    _id: new ObjectId(meetupId), // Use `new` here
+  });
+
+  client.close();
+
+  return {
+    id: selectedMeetup._id.toString(),
+    title: selectedMeetup.title,
+    address: selectedMeetup.address,
+    image: selectedMeetup.image,
+    description: selectedMeetup.description,
+  };
+}
+
 export default async function MeetupDetails({ params }) {
-  const meetupId = params.meetupId;
+  // Await params
+  const { meetupId } = await params;
 
-  // Fetch data for a single meetup
-  const meetupData = DUMMY_MEETUPS[meetupId] || {};
+  const meetupData = await getMeetupData(meetupId);
 
   return (
     <MeetupDetail

@@ -6,10 +6,10 @@ export async function POST(request) {
     const data = await request.json();
     
     const client = await MongoClient.connect('mongodb+srv://tope:ZMdfEeEoXuhCPcrA@cluster0.eg0br.mongodb.net/tope?retryWrites=true&w=majority', {
-      serverSelectionTimeoutMS: 5000, // 5 second timeout
+      serverSelectionTimeoutMS: 5000,
       retryWrites: true,
-      connectTimeoutMS: 10000, // 10 seconds
-      socketTimeoutMS: 45000, // 45 seconds
+      connectTimeoutMS: 10000, 
+      socketTimeoutMS: 45000, 
     });
 
     const db = client.db();
