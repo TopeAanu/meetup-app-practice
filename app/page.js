@@ -1,10 +1,12 @@
-import { MongoClient } from 'mongodb';
-import MeetupList from '../components/meetups/MeetupList';
+import { Fragment } from "react";
+import { MongoClient } from "mongodb";
+import MeetupList from "../components/meetups/MeetupList";
 
 async function connectToMongoDB() {
   try {
     const client = await MongoClient.connect(
-      process.env.MONGODB_URI || 'mongodb+srv://tope:ZMdfEeEoXuhCPcrA@cluster0.eg0br.mongodb.net/tope?retryWrites=true&w=majority',
+      process.env.MONGODB_URI ||
+        "mongodb+srv://tope:ZMdfEeEoXuhCPcrA@cluster0.eg0br.mongodb.net/tope?retryWrites=true&w=majority",
       {
         serverSelectionTimeoutMS: 5000,
         retryWrites: true,
@@ -14,18 +16,23 @@ async function connectToMongoDB() {
     );
     return client;
   } catch (error) {
-    console.error('Failed to connect to MongoDB:', error);
-    throw new Error('Failed to connect to database');
+    console.error("Failed to connect to MongoDB:", error);
+    throw new Error("Failed to connect to database");
   }
 }
+
+export const metadata = {
+  title: 'Meetups',
+  description: 'Checkout a huge list of highly active React meetups',
+};
 
 async function HomePage() {
   try {
     const client = await connectToMongoDB();
     const db = client.db();
-    const meetupsCollection = db.collection('tope');
+    const meetupsCollection = db.collection("tope");
     const meetups = await meetupsCollection.find().toArray();
-    
+
     await client.close();
 
     const transformedMeetups = meetups.map((meetup) => ({
@@ -35,9 +42,13 @@ async function HomePage() {
       id: meetup._id.toString(),
     }));
 
-    return <MeetupList meetups={transformedMeetups} />;
+    return (
+      <Fragment>
+        <MeetupList meetups={transformedMeetups} />
+      </Fragment>
+    );
   } catch (error) {
-    console.error('Error fetching meetups:', error);
+    console.error("Error fetching meetups:", error);
     return <div>Error loading meetups. Please try again later.</div>;
   }
 }
