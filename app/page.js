@@ -53,6 +53,6 @@ async function HomePage() {
   }
 }
 
-export const revalidate = 60;
+export const revalidate = 1;
 
 export default HomePage;
